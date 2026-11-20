@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Tanúsítások</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tanúsítás">
+<meta name="theme-color" content="#1A2E1A">
+<meta name="format-detection" content="telephone=no">
+<meta name="robots" content="noindex">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{
+  --sotet:#1A2E1A; --friss:#60C124; --kozep:#2E7D3A; --lagy:#A8C5A0; --hatter:#EEF3EC;
+  --szoveg:#1A1A1A; --halvany:#5f6b5d; --vonal:#dfe6dc; --piros:#c0392b; --narancs:#d9822b; --feher:#fff;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--hatter);color:var(--szoveg);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Roboto,"Segoe UI",sans-serif;font-size:16px}
+button,input,select,textarea{font:inherit;font-size:16px}
+a{color:var(--kozep)}
+#fej{position:sticky;top:0;z-index:20;background:var(--sotet);color:#fff;padding:calc(12px + env(safe-area-inset-top)) 16px 12px;
+  display:flex;align-items:center;gap:10px}
+#fej h1{font-size:19px;margin:0;flex:1;font-weight:700;letter-spacing:.2px}
+#fej .al{font-size:12px;color:var(--lagy);font-weight:400;display:block}
+.ikongomb{background:none;border:0;color:#fff;font-size:20px;padding:6px 8px;border-radius:8px}
+.ikongomb:active{background:rgba(255,255,255,.15)}
+main{padding:12px 12px 96px}
+#lab{position:fixed;bottom:0;left:0;right:0;z-index:30;background:#fff;border-top:1px solid var(--vonal);
+  display:flex;padding-bottom:env(safe-area-inset-bottom)}
+#lab button{flex:1;background:none;border:0;padding:8px 0 10px;color:var(--halvany);font-size:11px;display:flex;flex-direction:column;align-items:center;gap:2px}
+#lab button .i{font-size:22px;line-height:24px}
+#lab button.akt{color:var(--kozep);font-weight:700}
+#lab button.uj .i{background:var(--friss);color:#fff;border-radius:50%;width:34px;height:34px;line-height:34px;font-size:24px;margin-top:-4px}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--halvany);margin:18px 4px 8px;font-weight:700;display:flex;align-items:center;gap:6px}
+h2 .db{background:var(--sotet);color:#fff;border-radius:10px;padding:1px 7px;font-size:11px}
+.kartya{background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:8px;box-shadow:0 1px 2px rgba(26,46,26,.08);display:block;width:100%;text-align:left;border:0;color:inherit}
+button.kartya:active{background:#f6faf4}
+.k1{display:flex;align-items:flex-start;gap:8px}
+.k1 .nev{font-weight:700;flex:1;font-size:16px}
+.k2{color:var(--halvany);font-size:14px;margin-top:3px}
+.k3{font-size:14px;margin-top:5px;display:flex;gap:10px;flex-wrap:wrap}
+.cimke{display:inline-block;font-size:12px;padding:2px 8px;border-radius:10px;white-space:nowrap;background:#e8efe5;color:var(--sotet);font-weight:600}
+.c-uj{background:#fff1d6;color:#7a4a00}.c-piszk{background:#f3e8ff;color:#5b2b8a}.c-elk{background:#e2f0ff;color:#1d4f7a}
+.c-szerz{background:#ffe3d6;color:#8a3200}.c-szemle{background:#d9f5c9;color:#245a12}.c-resz{background:#e1efe0;color:#1A2E1A}
+.c-lez{background:#ececec;color:#555}.c-kez{background:#ffd9d9;color:#8a1c1c}.c-ell{background:#f0f0f0;color:#888}
+.ures{color:var(--halvany);font-size:14px;padding:6px 6px 2px}
+.sor{display:flex;align-items:center;gap:10px}
+.pipa{width:28px;height:28px;border-radius:50%;border:2px solid var(--lagy);background:#fff;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+.pipa.be{background:var(--kozep);border-color:var(--kozep)}
+.lejart{color:var(--piros);font-weight:600}.mai{color:var(--narancs);font-weight:600}
+.athuzott{text-decoration:line-through;color:var(--halvany)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 8px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{border:1px solid var(--vonal);background:#fff;border-radius:16px;padding:6px 12px;font-size:14px;white-space:nowrap;color:var(--szoveg)}
+.chip.akt{background:var(--sotet);color:#fff;border-color:var(--sotet)}
+.kereso{width:100%;padding:11px 14px;border-radius:10px;border:1px solid var(--vonal);background:#fff;margin-bottom:8px}
+/* lap (modal) */
+.lap{position:fixed;inset:0;z-index:50;background:var(--hatter);overflow-y:auto;-webkit-overflow-scrolling:touch;animation:be .18s ease-out}
+@keyframes be{from{transform:translateY(24px);opacity:.4}to{transform:none;opacity:1}}
+.lapfej{position:sticky;top:0;z-index:5;background:var(--sotet);color:#fff;display:flex;align-items:center;gap:6px;padding:calc(10px + env(safe-area-inset-top)) 8px 10px}
+.lapfej .cim{flex:1;font-weight:700;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lapbel{padding:12px 12px 120px}
+.gombsor{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:4px 0 10px}
+.gombsor a,.gombsor button{background:#fff;border:0;border-radius:12px;padding:10px 2px 8px;text-align:center;text-decoration:none;color:var(--sotet);font-size:12px;box-shadow:0 1px 2px rgba(26,46,26,.08)}
+.gombsor .i{font-size:22px;display:block;margin-bottom:2px}
+.gombsor .ki{opacity:.35;pointer-events:none}
+.mezo{margin-bottom:10px}
+.mezo label{display:block;font-size:13px;color:var(--halvany);margin:0 2px 4px;font-weight:600}
+.mezo input,.mezo select,.mezo textarea{width:100%;padding:11px 12px;border:1px solid var(--vonal);border-radius:10px;background:#fff;color:var(--szoveg)}
+.mezo textarea{min-height:76px;resize:vertical}
+.mezo input:focus,.mezo select:focus,.mezo textarea:focus{outline:2px solid var(--friss);border-color:transparent}
+.ket{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.blokk{background:#fff;border-radius:12px;padding:12px;margin-bottom:10px;box-shadow:0 1px 2px rgba(26,46,26,.08)}
+.gomb{display:block;width:100%;border:0;border-radius:12px;padding:14px;font-weight:700;background:var(--friss);color:var(--sotet);font-size:16px}
+.gomb.masod{background:#fff;color:var(--kozep);border:1px solid var(--vonal)}
+.gomb.veszely{background:#fff;color:var(--piros);border:1px solid #f0c9c4}
+.gomb:disabled{opacity:.5}
+.kisgomb{border:1px solid var(--vonal);background:#fff;border-radius:10px;padding:8px 12px;color:var(--kozep);font-weight:600;font-size:14px}
+.mentosav{position:fixed;left:0;right:0;bottom:0;z-index:60;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:rgba(238,243,236,.96);border-top:1px solid var(--vonal);display:none}
+.mentosav.lat{display:block}
+.jegyzet{white-space:pre-wrap;font-size:14px;line-height:1.4;color:#2C3A2A}
+.figy{background:#fff7e0;border:1px solid #f1d58a;color:#6b4d00;border-radius:10px;padding:10px 12px;font-size:14px;margin-bottom:10px}
+.toltes{position:fixed;inset:0;z-index:100;background:rgba(238,243,236,.6);display:none;align-items:center;justify-content:center}
+.toltes.lat{display:flex}
+.porgo{width:38px;height:38px;border:4px solid var(--lagy);border-top-color:var(--kozep);border-radius:50%;animation:p .8s linear infinite}
+@keyframes p{to{transform:rotate(360deg)}}
+#uzenet{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:110;background:var(--sotet);color:#fff;padding:10px 16px;border-radius:20px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;text-align:center}
+#uzenet.lat{opacity:1}
+#uzenet.hiba{background:var(--piros)}
+.fab{position:fixed;right:16px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:25;width:54px;height:54px;border-radius:50%;border:0;background:var(--friss);color:var(--sotet);font-size:30px;box-shadow:0 3px 10px rgba(26,46,26,.25)}
+.osszesito{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}
+.osszesito div{background:var(--sotet);color:#fff;border-radius:12px;padding:10px;text-align:center}
+.osszesito b{display:block;font-size:22px;color:var(--friss)}
+.osszesito span{font-size:12px;color:var(--lagy)}
+.idosav{font-variant-numeric:tabular-nums;font-weight:700;color:var(--kozep);min-width:48px}
+.check{display:flex;align-items:center;gap:10px;padding:6px 2px;font-size:15px}
+.check input{width:22px;height:22px;accent-color:var(--kozep)}
+</style>
+</head>
+<body>
+<div id="fej">
+  <h1 id="fejcim">Tanúsítások<span class="al" id="fejal"></span></h1>
+  <button class="ikongomb" id="frissit" aria-label="Frissítés">⟳</button>
+</div>
+<main id="tart"></main>
+<nav id="lab">
+  <button data-n="ma" class="akt"><span class="i">☀︎</span>Ma</button>
+  <button data-n="ugyek"><span class="i">▤</span>Ügyek</button>
+  <button data-n="uj" class="uj"><span class="i">+</span>Új megkeresés</button>
+  <button data-n="teendok"><span class="i">✓</span>Teendők</button>
+</nav>
+<div class="toltes" id="toltes"><div class="porgo"></div></div>
+<div id="uzenet"></div>
+
+<script>
+// ======================= kapcsolat a szerverrel =======================
+// Beállítás: a működő Apps Script link (…/exec?k=…) – a telefon megjegyzi (localStorage)
+function cfgOlvas() {
+  let c = {};
+  try { c = JSON.parse(localStorage.getItem('tanusitas_cfg') || '{}'); } catch (e) {}
+  const h = new URLSearchParams(location.hash.slice(1));
+  if (h.get('u') && h.get('k')) {
+    c = { u: h.get('u'), k: h.get('k') };
+    try { localStorage.setItem('tanusitas_cfg', JSON.stringify(c)); } catch (e) {}
+  }
+  return c;
+}
+function linkErtelmez(s) {
+  const m = String(s || '').trim().match(/^(https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec)\?k=([\w]+)/);
+  return m ? { u: m[1], k: m[2] } : null;
+}
+let CFG = cfgOlvas();
+let KULCS = CFG.k || '';
+let API_URL = CFG.u || '';
+
+function api(fn, ...args) {
+  return new Promise((res, rej) => {
+    if (false) {
+      google.script.run.withSuccessHandler(res).withFailureHandler(e => rej(new Error(e && e.message || e)))[fn](KULCS, ...args);
+    } else if (window.MOCK_API) {
+      Promise.resolve().then(() => window.MOCK_API(fn, args)).then(r => setTimeout(() => res(JSON.parse(JSON.stringify(r))), 150), rej);
+    } else {
+      fetch(API_URL, { method: 'POST', body: JSON.stringify({ fn, args, k: KULCS }) })
+        .then(r => r.json()).then(j => j.ok ? res(j.adat) : rej(new Error(j.hiba))).catch(rej);
+    }
+  });
+}
+
+// ======================= állapot, segédek =======================
+let D = { ugyek: [], teendok: [], naptar: [], allapotok: [], forrasok: [] };
+let nezet = 'ma', ugySzuro = 'Aktív', kereses = '', teendoSzuro = 'nyitott';
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>\x22\x27]/g, c => '&#' + c.charCodeAt(0) + ';');
+const pad = n => String(n).padStart(2, '0');
+const isoNap = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const maStr = () => isoNap(new Date());
+const napEltol = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return isoNap(d); };
+const HONAP = ['jan.', 'febr.', 'márc.', 'ápr.', 'máj.', 'jún.', 'júl.', 'aug.', 'szept.', 'okt.', 'nov.', 'dec.'];
+const NAP = ['vasárnap', 'hétfő', 'kedd', 'szerda', 'csütörtök', 'péntek', 'szombat'];
+function parseIdo(s) { const m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})(?: (\d{2}):(\d{2}))?/); return m ? new Date(+m[1], +m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0)) : null; }
+function napSzoveg(s) {
+  const d = parseIdo(s); if (!d) return '';
+  const nap = isoNap(d), ido = String(s).length > 10 ? ' ' + String(s).slice(11, 16) : '';
+  if (nap === maStr()) return 'ma' + ido;
+  if (nap === napEltol(1)) return 'holnap' + ido;
+  if (nap === napEltol(-1)) return 'tegnap' + ido;
+  const kul = Math.round((parseIdo(nap) - parseIdo(maStr())) / 86400000);
+  if (kul > 1 && kul < 7) return NAP[d.getDay()] + ido;
+  return (d.getFullYear() !== new Date().getFullYear() ? d.getFullYear() + '. ' : '') + HONAP[d.getMonth()] + ' ' + d.getDate() + '.' + ido;
+}
+function ft(x) {
+  if (x === '' || x == null) return '';
+  if (typeof x === 'number') return x.toLocaleString('hu-HU').replace(/ /g, ' ') + ' Ft';
+  return String(x);
+}
+function cimkeOsztaly(a) {
+  return ({ 'Új': 'c-uj', 'Ajánlat piszkozat': 'c-piszk', 'Ajánlat elküldve': 'c-elk', 'Szerződés visszajött': 'c-szerz',
+    'Szemle egyeztetve': 'c-szemle', '1. rész kész': 'c-resz', '2. rész kész': 'c-resz', '3. rész kész (lezárva)': 'c-lez',
+    'Kézzel intézendő': 'c-kez', 'Nem kérte / elállt': 'c-ell' })[a] || '';
+}
+const LEZART = ['3. rész kész (lezárva)', 'Nem kérte / elállt'];
+const telTiszta = t => String(t || '').replace(/[^+\d]/g, '');
+const telKulcs = t => String(t || '').replace(/\D/g, '').slice(-9);
+
+function toltes(be) { $('#toltes').classList.toggle('lat', be); }
+let uzT;
+function uzen(s, hiba) { const u = $('#uzenet'); u.textContent = s; u.className = 'lat' + (hiba ? ' hiba' : ''); clearTimeout(uzT); uzT = setTimeout(() => u.className = '', hiba ? 4500 : 2200); }
+function hibaKezel(e) {
+  toltes(false);
+  const m = e && e.message || String(e);
+  if (/megtagadva/.test(m)) { beallitoLap('A kulcs nem érvényes (pl. új kulcsot kértél). Másold be az új linket.'); return; }
+  uzen(/Failed to fetch|NetworkError|Load failed/.test(m) ? 'Nincs kapcsolat a szerverrel – próbáld újra.' : m, true);
+}
+
+async function betolt(csendes) {
+  if (!csendes) toltes(true);
+  try {
+    D = await api('APP_betolt');
+    rajzol();
+    $('#fejal').textContent = 'Frissítve ' + new Date().toTimeString().slice(0, 5);
+  } catch (e) { hibaKezel(e); } finally { toltes(false); }
+}
+
+// ======================= navigáció =======================
+document.querySelectorAll('#lab button').forEach(b => b.onclick = () => {
+  if (b.dataset.n === 'uj') { ujUgyLap(); return; }
+  nezet = b.dataset.n; rajzol(); window.scrollTo(0, 0);
+});
+$('#frissit').onclick = () => betolt();
+
+function rajzol() {
+  document.querySelectorAll('#lab button').forEach(b => b.classList.toggle('akt', b.dataset.n === nezet));
+  ({ ma: rajzMa, ugyek: rajzUgyek, teendok: rajzTeendok })[nezet]();
+}
+
+// ======================= kártyák =======================
+function ugyKartya(u, extra) {
+  const r = [u.telep, u.ingatlan, u.terulet !== '' ? u.terulet + ' m²' : ''].filter(Boolean).join(' · ');
+  const k3 = [u.dij !== '' ? '<span>' + esc(ft(u.dij)) + '</span>' : '',
+    u.szemle ? '<span>🗓 Szemle: ' + esc(napSzoveg(u.szemle)) + '</span>' : '',
+    extra || ''].filter(Boolean).join('');
+  return `<button class="kartya" onclick="ugyLap('${esc(u.id)}')">
+    <div class="k1"><span class="nev">${esc(u.nev)}</span><span class="cimke ${cimkeOsztaly(u.allapot)}">${esc(u.allapot || '–')}</span></div>
+    ${r ? `<div class="k2">${esc(r)}</div>` : ''}${k3 ? `<div class="k3">${k3}</div>` : ''}</button>`;
+}
+function teendoKartya(t) {
+  const hat = t.hatarido ? napSzoveg(t.hatarido) : '';
+  const lej = !t.kesz && t.hatarido && t.hatarido.slice(0, 10) < maStr();
+  const mai = !t.kesz && t.hatarido && t.hatarido.slice(0, 10) === maStr();
+  return `<div class="kartya sor">
+    <button class="pipa ${t.kesz ? 'be' : ''}" onclick="teendoPipa('${esc(t.id)}')" aria-label="Kész">${t.kesz ? '✓' : ''}</button>
+    <div style="flex:1;min-width:0" onclick="teendoLap('${esc(t.id)}')">
+      <div class="${t.kesz ? 'athuzott' : ''}" style="font-weight:600">${esc(t.feladat)}</div>
+      <div class="k2">${hat ? `<span class="${lej ? 'lejart' : mai ? 'mai' : ''}">${esc(hat)}</span>` : ''}${t.naptar ? ' 🔔' : ''}${t.ugyfel ? ' · ' + esc(t.ugyfel) : ''}</div>
+    </div></div>`;
+}
+function szekcio(cim, elemek, uresSz) {
+  return `<h2>${esc(cim)}${elemek.length ? ` <span class="db">${elemek.length}</span>` : ''}</h2>` +
+    (elemek.length ? elemek.join('') : (uresSz ? `<div class="ures">${esc(uresSz)}</div>` : ''));
+}
+
+// ======================= MA =======================
+function rajzMa() {
+  const ma = maStr(), het = napEltol(7), d = new Date();
+  $('#fejcim').firstChild.textContent = NAP[d.getDay()][0].toUpperCase() + NAP[d.getDay()].slice(1) + ', ' + HONAP[d.getMonth()] + ' ' + d.getDate() + '.';
+  const aktiv = D.ugyek.filter(u => !LEZART.includes(u.allapot));
+  const szemlek = D.ugyek.filter(u => u.szemle && u.szemle.slice(0, 10) >= ma && u.szemle.slice(0, 10) < het)
+    .sort((a, b) => a.szemle.localeCompare(b.szemle));
+  const hivando = aktiv.filter(u => u.allapot === 'Szerződés visszajött' && !u.szemle);
+  const teendo = D.teendok.filter(t => !t.kesz && t.hatarido && t.hatarido.slice(0, 10) <= ma).sort((a, b) => a.hatarido.localeCompare(b.hatarido));
+  const intezendo = aktiv.filter(u => ['Új', 'Ajánlat piszkozat', 'Kézzel intézendő'].includes(u.allapot));
+  const hetElott = napEltol(-7);
+  const utankovet = aktiv.filter(u => u.allapot === 'Ajánlat elküldve' && u.ajKelte && u.ajKelte <= hetElott)
+    .sort((a, b) => a.ajKelte.localeCompare(b.ajKelte));
+  const naptar = D.naptar.filter(e => e.kezd.slice(0, 10) <= napEltol(1));
+
+  const nyitottDij = aktiv.filter(u => !['Új', 'Ajánlat piszkozat', 'Kézzel intézendő', 'Ajánlat elküldve'].includes(u.allapot))
+    .reduce((s, u) => s + (typeof u.dij === 'number' ? u.dij : 0) - (typeof u.befolyt === 'number' ? u.befolyt : 0), 0);
+
+  let h = `<div class="osszesito">
+    <div><b>${aktiv.length}</b><span>aktív ügy</span></div>
+    <div><b>${szemlek.length}</b><span>szemle 7 napon belül</span></div>
+    <div><b>${nyitottDij ? Math.round(nyitottDij / 1000) + 'e' : '0'}</b><span>megrendelt, még nem fizetett (Ft)</span></div></div>`;
+  h += szekcio('Szemlék a következő 7 napban', szemlek.map(u => ugyKartya(u)), 'Nincs egyeztetett szemle.');
+  if (hivando.length) h += szekcio('Hívd fel – szemle egyeztetés', hivando.map(u => ugyKartya(u,
+    u.tel ? `<a href="tel:${esc(telTiszta(u.tel))}" onclick="event.stopPropagation()">📞 ${esc(u.tel)}</a>` : '<span class="lejart">nincs telefonszám</span>')));
+  h += szekcio('Mai és lejárt teendők', teendo.map(teendoKartya), 'Nincs mára teendő. 👍');
+  if (intezendo.length) h += szekcio('Intézendő megkeresések', intezendo.map(u => ugyKartya(u, u.beerk ? '<span>beérkezett ' + esc(napSzoveg(u.beerk)) + '</span>' : '')));
+  if (utankovet.length) h += szekcio('Utánkövetés – 7+ napja ment az ajánlat', utankovet.map(u => ugyKartya(u, '<span>ajánlat: ' + esc(napSzoveg(u.ajKelte)) + '</span>')));
+  if (naptar.length) h += szekcio('Naptár (ma, holnap)', naptar.map(e => `<div class="kartya sor"><span class="idosav">${e.egeszNap ? 'egész' : esc(e.kezd.slice(11, 16))}</span>
+      <div style="flex:1"><div style="font-weight:600">${esc(e.cim)}</div><div class="k2">${esc(napSzoveg(e.kezd.slice(0, 10)))}${e.hely ? ' · ' + esc(e.hely) : ''}</div></div></div>`));
+  h += `<p class="k2" style="text-align:center;margin-top:28px">${D.tablaUrl ? `<a href="${esc(D.tablaUrl)}" target="_blank">Táblázat megnyitása</a> · ` : ''}<a href="#" onclick="event.preventDefault();if(confirm('Új link megadása?'))beallitasTorles()">Link csere</a></p>`;
+  $('#tart').innerHTML = h;
+}
+
+// ======================= ÜGYEK =======================
+function rajzUgyek() {
+  $('#fejcim').firstChild.textContent = 'Ügyek';
+  const szurok = ['Aktív', 'Mind'].concat(D.allapotok);
+  const db = a => a === 'Mind' ? D.ugyek.length : a === 'Aktív' ? D.ugyek.filter(u => !LEZART.includes(u.allapot)).length : D.ugyek.filter(u => u.allapot === a).length;
+  let h = `<input class="kereso" id="ker" type="search" placeholder="Keresés: név, település, telefon…" value="${esc(kereses)}">
+    <div class="chips">${szurok.filter(a => a === 'Aktív' || a === 'Mind' || db(a)).map(a => `<button class="chip ${a === ugySzuro ? 'akt' : ''}" data-a="${esc(a)}">${esc(a)} (${db(a)})</button>`).join('')}</div>
+    <div id="lista"></div>`;
+  $('#tart').innerHTML = h;
+  document.querySelectorAll('.chip').forEach(c => c.onclick = () => { ugySzuro = c.dataset.a; rajzUgyek(); });
+  $('#ker').oninput = e => { kereses = e.target.value; ugyLista(); };
+  ugyLista();
+}
+function ugyLista() {
+  const q = kereses.trim().toLowerCase(), qt = q.replace(/\D/g, '');
+  let l = D.ugyek.filter(u => ugySzuro === 'Mind' || (ugySzuro === 'Aktív' ? !LEZART.includes(u.allapot) : u.allapot === ugySzuro));
+  if (q) l = l.filter(u => [u.nev, u.telep, u.email, u.ingatlan, u.megj, u.uzenet].join(' ').toLowerCase().includes(q) ||
+    (qt.length >= 4 && String(u.tel).replace(/\D/g, '').includes(qt)));
+  l.sort((a, b) => String(b.beerk).localeCompare(String(a.beerk)) || b.sor - a.sor);
+  $('#lista').innerHTML = l.length ? l.map(u => ugyKartya(u, u.beerk ? '<span style="color:var(--halvany)">' + esc(napSzoveg(u.beerk)) + '</span>' : '')).join('') : '<div class="ures">Nincs találat.</div>';
+}
+
+// ======================= ÜGY RÉSZLETEI =======================
+function lapNyit(html) {
+  const l = document.createElement('div'); l.className = 'lap'; l.innerHTML = html;
+  document.body.appendChild(l); document.body.style.overflow = 'hidden';
+  return l;
+}
+function lapZar(l) { l.remove(); if (!document.querySelector('.lap')) document.body.style.overflow = ''; }
+
+const UGY_MEZOK = [
+  ['nev', 'Név', 'text'], ['tel', 'Telefon', 'tel'], ['email', 'E-mail', 'email'], ['telep', 'Település / cím', 'text'],
+  ['ingatlan', 'Ingatlan', 'text'], ['terulet', 'Alapterület (m²)', 'text'], ['uzenet', 'Érdeklődő üzenete / igény', 'textarea'],
+  ['forras', 'Forrás', 'forras'], ['beerk', 'Beérkezett', 'date'], ['ajKelte', 'Ajánlat kelte', 'date'],
+  ['dij', 'Ajánlott díj (Ft)', 'text'], ['dijReszl', 'Díj részletezése', 'text'], ['befolyt', 'Befolyt összeg (Ft)', 'text'],
+  ['megj', 'Saját megjegyzés', 'textarea']
+];
+
+function mezoHtml(kulcs, cim, tipus, ertek) {
+  const v = esc(ertek == null ? '' : ertek);
+  let inp;
+  if (tipus === 'textarea') inp = `<textarea data-m="${kulcs}">${v}</textarea>`;
+  else if (tipus === 'forras') {
+    const op = D.forrasok.slice(); if (ertek && !op.includes(ertek)) op.unshift(ertek);
+    inp = `<select data-m="${kulcs}"><option value=""></option>${op.map(o => `<option ${o === ertek ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select>`;
+  } else inp = `<input data-m="${kulcs}" type="${tipus}" value="${v}" ${tipus === 'text' && /dij|befolyt|terulet/.test(kulcs) ? 'inputmode="numeric"' : ''}>`;
+  return `<div class="mezo"><label>${esc(cim)}</label>${inp}</div>`;
+}
+
+function ugyLap(id) {
+  const u = D.ugyek.find(x => x.id === id);
+  if (!u) { uzen('Az ügy nem található – frissíts.', true); return; }
+  const tel = telTiszta(u.tel);
+  const terkep = 'https:\/\/maps.apple.com\/?q=' + encodeURIComponent(u.telep || '');
+  const gmail = u.gmailId ? 'https:\/\/mail.google.com\/mail\/u\/0\/#all\/' + encodeURIComponent(u.gmailId) : '';
+  const [szNap, szIdo] = u.szemle ? [u.szemle.slice(0, 10), u.szemle.slice(11, 16)] : ['', ''];
+  const allOp = D.allapotok.slice(); if (!allOp.includes(u.allapot || '')) allOp.unshift(u.allapot || '');
+  const teendok = D.teendok.filter(t => t.ugyId === id).sort((a, b) => (a.kesz - b.kesz) || String(a.hatarido || '9').localeCompare(String(b.hatarido || '9')));
+
+  const l = lapNyit(`
+    <div class="lapfej"><button class="ikongomb" data-zar>‹</button><div class="cim">${esc(u.nev)}</div>
+      <span class="cimke ${cimkeOsztaly(u.allapot)}" style="margin-right:6px">${esc(u.allapot)}</span></div>
+    <div class="lapbel">
+      <div class="gombsor">
+        <a class="${tel ? '' : 'ki'}" href="tel:${esc(tel)}"><span class="i">📞</span>Hívás</a>
+        <a class="${tel ? '' : 'ki'}" href="sms:${esc(tel)}"><span class="i">💬</span>SMS</a>
+        <a class="${u.email ? '' : 'ki'}" href="mailto:${esc(u.email)}"><span class="i">✉️</span>E-mail</a>
+        <a class="${u.telep ? '' : 'ki'}" href="${esc(terkep)}" target="_blank"><span class="i">🗺</span>Térkép</a>
+        <a class="${gmail ? '' : 'ki'}" href="${esc(gmail)}" target="_blank"><span class="i">📨</span>Levél</a>
+      </div>
+      <div class="blokk">
+        <div class="mezo"><label>Állapot</label><select data-m="allapot">${allOp.map(a => `<option ${a === u.allapot ? 'selected' : ''}>${esc(a)}</option>`).join('')}</select></div>
+        <div class="mezo" style="margin-bottom:0"><label>Szemle időpontja</label>
+          <div class="ket"><input type="date" id="szNap" value="${esc(szNap)}"><input type="time" id="szIdo" value="${esc(szIdo)}" step="900"></div>
+          <div class="k2" style="margin-top:4px">Csak dátum = egész napos. Mentés után a naptárba kerül${u.vanEsemeny ? ' (már benne van)' : ''}.</div>
+          ${szNap ? '<button class="kisgomb" id="szTorol" style="margin-top:6px">Időpont törlése</button>' : ''}
+        </div>
+      </div>
+      <div class="blokk">
+        <div class="mezo" style="margin-bottom:6px"><label>Gyors jegyzet (hívás után) – dátummal a megjegyzéshez fűzi</label>
+          <textarea id="jegyzet" placeholder="pl. visszahív jövő héten, alaprajzot küld…" style="min-height:56px"></textarea></div>
+        <button class="kisgomb" id="jegyzetGomb">Jegyzet hozzáadása</button>
+        ${u.megj ? `<div class="jegyzet" style="margin-top:10px">${esc(u.megj)}</div>` : ''}
+      </div>
+      <h2>Teendők ehhez az ügyhöz</h2>
+      ${teendok.map(teendoKartya).join('') || '<div class="ures">Nincs teendő.</div>'}
+      <button class="kisgomb" id="ujTeendo" style="margin:4px 0 6px">+ Új teendő</button>
+      <h2>Adatok</h2>
+      <div class="blokk">${UGY_MEZOK.map(([k, c, t]) => mezoHtml(k, c, t, u[k])).join('')}
+        <div class="k2">Táblázat ${u.sor}. sora · utolsó frissítés: ${esc(u.frissites || '–')}</div></div>
+    </div>
+    <div class="mentosav" id="mentosav"><button class="gomb" id="ment">Mentés</button></div>`);
+  l.dataset.ugy = id;
+
+  const ertek = () => {
+    const o = {};
+    l.querySelectorAll('[data-m]').forEach(e => o[e.dataset.m] = e.value.trim());
+    const n = l.querySelector('#szNap').value, i = l.querySelector('#szIdo').value;
+    o.szemle = n ? (i ? n + ' ' + i : n) : '';
+    return o;
+  };
+  const kulonbseg = () => {
+    const o = ertek(), v = {};
+    Object.keys(o).forEach(k => { if (String(o[k]) !== String(u[k] == null ? '' : u[k]).trim()) v[k] = { regi: u[k], uj: o[k] }; });
+    return v;
+  };
+  const frissitSav = () => {
+    const n = Object.keys(kulonbseg()).length;
+    l.querySelector('#mentosav').classList.toggle('lat', n > 0);
+    l.querySelector('#ment').textContent = 'Mentés (' + n + ' változás)';
+  };
+  l.addEventListener('input', e => { if (e.target.id !== 'jegyzet') frissitSav(); });
+  l.addEventListener('change', e => { if (e.target.id !== 'jegyzet') frissitSav(); });
+  l.querySelector('[data-zar]').onclick = () => {
+    if (Object.keys(kulonbseg()).length && !confirm('Mentetlen változások vannak. Elveted őket?')) return;
+    lapZar(l);
+  };
+  const szt = l.querySelector('#szTorol');
+  if (szt) szt.onclick = () => { l.querySelector('#szNap').value = ''; l.querySelector('#szIdo').value = ''; frissitSav(); };
+  l.querySelector('#ment').onclick = async () => {
+    const v = kulonbseg(); if (!Object.keys(v).length) return;
+    toltes(true);
+    try {
+      const r = await api('APP_ugyMentes', id, v);
+      if (r.utkozes) {
+        csere(r.ugy); toltes(false); lapZar(l); ugyLap(id);
+        uzen('Közben valaki/valami módosította: ' + r.utkozes.join(', ') + '. Frissítettem – nézd át és mentsd újra.', true);
+        return;
+      }
+      csere(r.ugy); toltes(false); lapZar(l); ugyLap(id); rajzol(); uzen('Mentve ✓');
+    } catch (e) { hibaKezel(e); }
+  };
+  l.querySelector('#jegyzetGomb').onclick = async () => {
+    const s = l.querySelector('#jegyzet').value.trim(); if (!s) return;
+    if (Object.keys(kulonbseg()).length) { uzen('Előbb mentsd a változásokat.', true); return; }
+    toltes(true);
+    try { const r = await api('APP_jegyzet', id, s); csere(r.ugy); toltes(false); lapZar(l); ugyLap(id); uzen('Jegyzet hozzáadva ✓'); }
+    catch (e) { hibaKezel(e); }
+  };
+  l.querySelector('#ujTeendo').onclick = () => teendoLap(null, { ugyId: id, ugyfel: u.nev });
+}
+function csere(u) {
+  const i = D.ugyek.findIndex(x => x.id === u.id);
+  if (i >= 0) D.ugyek[i] = u; else D.ugyek.push(u);
+}
+
+// ======================= ÚJ MEGKERESÉS =======================
+function ujUgyLap() {
+  const l = lapNyit(`
+    <div class="lapfej"><button class="ikongomb" data-zar>‹</button><div class="cim">Új megkeresés</div></div>
+    <div class="lapbel">
+      <div id="dupla"></div>
+      <div class="blokk">
+        <div class="mezo"><label>Név *</label><input data-m="nev" autocomplete="off"></div>
+        <div class="ket"><div class="mezo"><label>Telefon</label><input data-m="tel" type="tel" placeholder="+36 30 123 4567"></div>
+          <div class="mezo"><label>Alapterület (m²)</label><input data-m="terulet" inputmode="numeric"></div></div>
+        <div class="mezo"><label>E-mail</label><input data-m="email" type="email" autocapitalize="off"></div>
+        <div class="mezo"><label>Település / cím</label><input data-m="telep" placeholder="pl. Csömör / Budapest, XVI. ker."></div>
+        <div class="mezo"><label>Ingatlan</label>
+          <div class="chips" id="ingChips">${['lakás', 'családi ház', 'társasház', 'panellakás', 'egyéb'].map(x => `<button class="chip" type="button">${x}</button>`).join('')}</div>
+          <input data-m="ingatlan" placeholder="pl. családi ház, 2 szintes, 1975"></div>
+        <div class="mezo"><label>Mit kér? / megjegyzés a hívásból</label><textarea data-m="uzenet" placeholder="pl. eladáshoz tanúsítvány, sürgős; Wekerle+ érdekli…"></textarea></div>
+        <div class="ket">
+          <div class="mezo"><label>Forrás</label><select data-m="forras">${D.forrasok.map(f => `<option ${f === 'telefon' ? 'selected' : ''}>${esc(f)}</option>`).join('')}</select></div>
+          <div class="mezo"><label>Állapot</label><select data-m="allapot">${D.allapotok.map(a => `<option ${a === 'Új' ? 'selected' : ''}>${esc(a)}</option>`).join('')}</select></div>
+        </div>
+      </div>
+      <div class="blokk">
+        <label class="check"><input type="checkbox" id="tBe" checked> Teendő hozzáadása</label>
+        <div id="tResz">
+          <div class="mezo"><input id="tSz" value="Ajánlatot küldeni"></div>
+          <div class="ket"><input type="date" id="tNap" value="${napEltol(1)}" class="mezo" style="padding:11px;border:1px solid var(--vonal);border-radius:10px">
+            <input type="time" id="tIdo" value="09:00" step="900" style="padding:11px;border:1px solid var(--vonal);border-radius:10px"></div>
+          <label class="check"><input type="checkbox" id="tNaptar" checked> Emlékeztető a naptárba 🔔</label>
+        </div>
+      </div>
+      <button class="gomb" id="ment">Mentés a táblázatba</button>
+    </div>`);
+  l.querySelector('[data-zar]').onclick = () => lapZar(l);
+  l.querySelectorAll('#ingChips .chip').forEach(c => c.onclick = () => {
+    const i = l.querySelector('[data-m=ingatlan]'); i.value = c.textContent === 'egyéb' ? '' : c.textContent; i.focus();
+  });
+  l.querySelector('#tBe').onchange = e => l.querySelector('#tResz').style.display = e.target.checked ? '' : 'none';
+  const duplaNez = () => {
+    const tk = telKulcs(l.querySelector('[data-m=tel]').value), em = l.querySelector('[data-m=email]').value.trim().toLowerCase();
+    const nv = l.querySelector('[data-m=nev]').value.trim().toLowerCase();
+    const t = D.ugyek.filter(u => (tk.length === 9 && telKulcs(u.tel) === tk) || (em && String(u.email).toLowerCase() === em) || (nv.length > 4 && String(u.nev).toLowerCase() === nv));
+    l.querySelector('#dupla').innerHTML = t.length ? `<div class="figy">Már van ilyen ügyfél a táblázatban:<br>${t.map(u =>
+      `<a href="#" onclick="event.preventDefault();ugyLap('${esc(u.id)}')">${esc(u.nev)} – ${esc(u.telep || '')} (${esc(u.allapot)})</a>`).join('<br>')}<br>Ha ugyanarról az ingatlanról van szó, inkább ott írj jegyzetet. Másik ingatlan = új sor.</div>` : '';
+  };
+  ['tel', 'email', 'nev'].forEach(m => l.querySelector(`[data-m=${m}]`).addEventListener('change', duplaNez));
+  l.querySelector('#ment').onclick = async () => {
+    const a = {}; l.querySelectorAll('[data-m]').forEach(e => a[e.dataset.m] = e.value.trim());
+    if (!a.nev) { uzen('A név kötelező.', true); return; }
+    let t = null;
+    if (l.querySelector('#tBe').checked && l.querySelector('#tSz').value.trim()) {
+      const n = l.querySelector('#tNap').value, i = l.querySelector('#tIdo').value;
+      t = { feladat: l.querySelector('#tSz').value.trim(), hatarido: n ? (i ? n + ' ' + i : n) : '', naptarba: l.querySelector('#tNaptar').checked };
+    }
+    toltes(true);
+    try {
+      const r = await api('APP_ujUgy', a, t);
+      csere(r.ugy); if (r.teendo) D.teendok.push(r.teendo);
+      toltes(false); lapZar(l); rajzol(); uzen('Mentve a táblázatba ✓'); ugyLap(r.ugy.id);
+    } catch (e) { hibaKezel(e); }
+  };
+  setTimeout(() => l.querySelector('[data-m=nev]').focus(), 250);
+}
+
+// ======================= TEENDŐK =======================
+function rajzTeendok() {
+  $('#fejcim').firstChild.textContent = 'Teendők';
+  const ma = maStr(), holnap = napEltol(1);
+  let h = `<div class="chips"><button class="chip ${teendoSzuro === 'nyitott' ? 'akt' : ''}" data-s="nyitott">Nyitott</button>
+    <button class="chip ${teendoSzuro === 'kesz' ? 'akt' : ''}" data-s="kesz">Kész (45 nap)</button></div>`;
+  if (teendoSzuro === 'kesz') {
+    const k = D.teendok.filter(t => t.kesz).sort((a, b) => String(b.keszIdo).localeCompare(String(a.keszIdo)));
+    h += k.map(teendoKartya).join('') || '<div class="ures">Nincs kész teendő.</div>';
+  } else {
+    const ny = D.teendok.filter(t => !t.kesz).sort((a, b) => String(a.hatarido || '9999').localeCompare(String(b.hatarido || '9999')));
+    const csop = [['Lejárt', t => t.hatarido && t.hatarido.slice(0, 10) < ma], ['Ma', t => t.hatarido && t.hatarido.slice(0, 10) === ma],
+      ['Holnap', t => t.hatarido && t.hatarido.slice(0, 10) === holnap], ['Később', t => t.hatarido && t.hatarido.slice(0, 10) > holnap],
+      ['Határidő nélkül', t => !t.hatarido]];
+    csop.forEach(([c, f]) => { const e = ny.filter(f); if (e.length) h += szekcio(c, e.map(teendoKartya)); });
+    if (!ny.length) h += '<div class="ures">Nincs nyitott teendő. 👍</div>';
+  }
+  h += '<button class="fab" onclick="teendoLap(null)" aria-label="Új teendő">+</button>';
+  $('#tart').innerHTML = h;
+  document.querySelectorAll('.chip[data-s]').forEach(c => c.onclick = () => { teendoSzuro = c.dataset.s; rajzTeendok(); });
+}
+
+async function teendoPipa(id) {
+  const t = D.teendok.find(x => x.id === id); if (!t) return;
+  const uj = Object.assign({}, t, { kesz: !t.kesz }); delete uj.naptarba;
+  t.kesz = !t.kesz; frissitNyitott();
+  try {
+    const r = await api('APP_teendoMentes', uj);
+    Object.assign(t, r); frissitNyitott(); uzen(r.kesz ? 'Kész ✓' : 'Visszanyitva');
+  } catch (e) { t.kesz = !t.kesz; frissitNyitott(); hibaKezel(e); }
+}
+function frissitNyitott() { rajzol(); ujraNyitUgy(); }
+
+function teendoLap(id, alap) {
+  const t = id ? D.teendok.find(x => x.id === id) : Object.assign({ feladat: '', hatarido: napEltol(0), megj: '', kesz: false, naptar: false }, alap || {});
+  if (!t) return;
+  const [n, i] = t.hatarido ? [t.hatarido.slice(0, 10), t.hatarido.slice(11, 16)] : ['', ''];
+  const aktiv = D.ugyek.filter(u => !LEZART.includes(u.allapot) || u.id === t.ugyId).sort((a, b) => a.nev.localeCompare(b.nev, 'hu'));
+  const l = lapNyit(`
+    <div class="lapfej"><button class="ikongomb" data-zar>‹</button><div class="cim">${id ? 'Teendő' : 'Új teendő'}</div></div>
+    <div class="lapbel"><div class="blokk">
+      <div class="mezo"><label>Feladat *</label><textarea id="sz" style="min-height:60px">${esc(t.feladat)}</textarea></div>
+      <div class="mezo"><label>Határidő</label><div class="ket"><input type="date" id="n" value="${esc(n)}"><input type="time" id="i" value="${esc(i)}" step="900"></div></div>
+      <div class="chips">${[['Ma', 0], ['Holnap', 1], ['2 nap', 2], ['1 hét', 7], ['Nincs', null]].map(([c, d]) => `<button class="chip" type="button" data-d="${d}">${c}</button>`).join('')}</div>
+      <label class="check"><input type="checkbox" id="nap" ${t.naptar || !id ? 'checked' : ''}> Emlékeztető a naptárba 🔔 <span class="k2">(időponttal: 15 perccel előtte szól)</span></label>
+      <div class="mezo"><label>Ügy (nem kötelező)</label><select id="ugy"><option value="">– nincs –</option>${aktiv.map(u => `<option value="${esc(u.id)}" ${u.id === t.ugyId ? 'selected' : ''}>${esc(u.nev)}${u.telep ? ' – ' + esc(u.telep) : ''}</option>`).join('')}</select></div>
+      <div class="mezo"><label>Megjegyzés</label><textarea id="megj">${esc(t.megj)}</textarea></div>
+      ${id ? `<label class="check"><input type="checkbox" id="kesz" ${t.kesz ? 'checked' : ''}> Kész</label>` : ''}
+    </div>
+    <button class="gomb" id="ment">Mentés</button>
+    ${t.ugyId && D.ugyek.find(u => u.id === t.ugyId) ? '<button class="gomb masod" id="ugyNyit" style="margin-top:8px">Ügy megnyitása</button>' : ''}
+    ${id ? '<button class="gomb veszely" id="torol" style="margin-top:8px">Törlés</button>' : ''}
+    </div>`);
+  l.querySelector('[data-zar]').onclick = () => lapZar(l);
+  l.querySelectorAll('.chip[data-d]').forEach(c => c.onclick = () => {
+    l.querySelector('#n').value = c.dataset.d === 'null' ? '' : napEltol(+c.dataset.d);
+    if (c.dataset.d === 'null') l.querySelector('#i').value = '';
+  });
+  l.querySelector('#ment').onclick = async () => {
+    const sz = l.querySelector('#sz').value.trim(); if (!sz) { uzen('Írd be a feladatot.', true); return; }
+    const nn = l.querySelector('#n').value, ii = l.querySelector('#i').value;
+    const ugyId = l.querySelector('#ugy').value, ugy = D.ugyek.find(u => u.id === ugyId);
+    const adat = { id: id || '', feladat: sz, hatarido: nn ? (ii ? nn + ' ' + ii : nn) : '', ugyId: ugyId, ugyfel: ugy ? ugy.nev : '',
+      megj: l.querySelector('#megj').value.trim(), kesz: id ? l.querySelector('#kesz').checked : false, naptarba: l.querySelector('#nap').checked };
+    toltes(true);
+    try {
+      const r = await api('APP_teendoMentes', adat);
+      const x = D.teendok.findIndex(q => q.id === r.id); if (x >= 0) D.teendok[x] = r; else D.teendok.push(r);
+      toltes(false); lapZar(l); ujraNyitUgy(); rajzol(); uzen('Mentve ✓');
+    } catch (e) { hibaKezel(e); }
+  };
+  const un = l.querySelector('#ugyNyit'); if (un) un.onclick = () => { lapZar(l); ugyLap(t.ugyId); };
+  const tr = l.querySelector('#torol');
+  if (tr) tr.onclick = async () => {
+    if (!confirm('Biztosan törlöd ezt a teendőt?')) return;
+    toltes(true);
+    try { await api('APP_teendoTorles', id); D.teendok = D.teendok.filter(q => q.id !== id); toltes(false); lapZar(l); ujraNyitUgy(); rajzol(); uzen('Törölve'); }
+    catch (e) { hibaKezel(e); }
+  };
+}
+/** Ha alatta egy ügy-lap van nyitva, rajzolja újra (frissüljön a teendőlistája). */
+function ujraNyitUgy() {
+  const lapok = document.querySelectorAll('.lap'); const fel = lapok[lapok.length - 1];
+  if (!fel || !fel.querySelector('#jegyzetGomb')) return;
+  if (fel.querySelector('#mentosav.lat')) return;
+  const id = fel.dataset.ugy, y = fel.scrollTop;
+  lapZar(fel); ugyLap(id);
+  const uj = document.querySelectorAll('.lap'); uj[uj.length - 1].scrollTop = y;
+}
+
+// ======================= beállítás =======================
+function beallitoLap(hiba) {
+  const l = lapNyit(`
+    <div class="lapfej"><div class="cim" style="padding-left:8px">Beállítás</div></div>
+    <div class="lapbel"><div class="blokk">
+      <p style="margin-top:0">Másold be egyszer az app linkjét (ami a gépen működik): <b>https://script.google.com/macros/s/…/exec?k=…</b></p>
+      ${hiba ? `<div class="figy">${esc(hiba)}</div>` : ''}
+      <div class="mezo"><textarea id="lnk" placeholder="https://script.google.com/macros/s/…/exec?k=…" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea></div>
+      <button class="gomb" id="ok">Mentés és indítás</button>
+      <p class="k2">A link a telefonon marad, máshová nem kerül. Ne oszd meg senkivel.</p>
+    </div></div>`);
+  l.querySelector('#ok').onclick = () => {
+    const c = linkErtelmez(l.querySelector('#lnk').value);
+    if (!c) { uzen('Ez nem jó link. …/exec?k=… formájú kell.', true); return; }
+    try { localStorage.setItem('tanusitas_cfg', JSON.stringify(c)); } catch (e) {}
+    CFG = c; KULCS = c.k; API_URL = c.u;
+    lapZar(l); betolt();
+  };
+}
+window.beallitasTorles = () => { try { localStorage.removeItem('tanusitas_cfg'); } catch (e) {} location.hash = ''; location.reload(); };
+
+// ======================= indulás =======================
+if (location.hash) history.replaceState(null, '', location.pathname);   // a kulcs ne maradjon a címsorban
+if (!KULCS || !API_URL) beallitoLap(); else betolt();
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !document.querySelector('.lap')) betolt(true); });
+</script>
+</body>
+</html>
